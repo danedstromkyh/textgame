@@ -6,18 +6,15 @@ public class Main {
 
 
 
-
     public static void main(String[] args) {
-
-        Music music = new Music();
-        music.playMusic("");
-        JOptionPane.showMessageDialog(null,"Welcome player, press OK to start adventure");
-
-        Command commands = new Command();
+        CommandHelp commands = new CommandHelp();
         Game game = new Game();
 
+        Music music = new Music();
+        //music.playMusic("");
+        JOptionPane.showMessageDialog(null,"Welcome to Escape the mansion! Press OK to start");
         game.intro();
-        commands.allCommands();
+        game.allCommands();
 
 
     }

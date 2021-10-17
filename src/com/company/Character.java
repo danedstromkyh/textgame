@@ -1,23 +1,22 @@
 package com.company;
 
+import java.util.ArrayList;
+
 public class Character {
     String name;
     String description;
     private Room location;
-    ThingList items = new ThingList();
+    private ArrayList<Treasure>playerList;
 
 
-public Character(String inName,String inDescription, ThingList inItem, Room inRoom) {
+
+public Character(String inName, String inDescription, ArrayList<Treasure>inPlayerList, Room inRoom) {
     name = inName;
     description = inDescription;
     location = inRoom;
-    items = inItem;
+    playerList = inPlayerList;
 
 }
-
-    public ThingList getItems() {
-        return items;
-    }
 
     public Room getLocation() {
         return location;
