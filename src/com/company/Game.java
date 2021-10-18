@@ -17,6 +17,7 @@ public class Game {
     private Character hero;
     private Character police;
     private String take;
+    private String use;
 
 
     public Game() {
@@ -25,20 +26,24 @@ public class Game {
         bedroomList.add(new Treasure("Junk", "Test"));
         kitchenList.add(new Treasure("Key","Is this keys to the locked door?"));
         hallwayList.add(new Treasure("Wallet","Its a note in your wallet"));
+        hallwayList.add(new Treasure("Crowbar","Can be used to open locked doors"));
         livingRoomList.add(new Treasure("Mobile phone", "Its your phone!"));
         terraceList.add(new Treasure("Pepper spray", "Use it for protection"));
 
         //Create rooms, possible exits created. (N, S, E, W) Ex Master bedroom. Integer 2 is represented as south. Leading to Arraylist at index 2 which is Hallway
-        map.add(new Room("Master bedroom", "A dark messy room with a huge bed", Direction.noGo, -1, Direction.noGo, 1, bedroomList));
+        map.add(new Room("Master bedroom", "A dark messy room with a huge bed", Direction.noGo, Direction.noGo, Direction.noGo, 1, bedroomList));
         map.add(new Room("Kitchen", "looks like its been a party here. Bottles all over", Direction.noGo, Direction.noGo, 0, Direction.noGo, kitchenList));
         map.add(new Room("Hallway", "Long hallway, smells like liquor", 0, Direction.noGo, Direction.noGo, 3, hallwayList));
-        map.add(new Room("Living room", "A bunch of passed out people and loud music", Direction.noGo, Direction.noGo, 2, 4, livingRoomList));
+        map.add(new Room("Living room", "A bunch of passed out people and loud music", Direction.noGo, Direction.noGo, 2, Direction.noGo, livingRoomList));
         map.add(new Room("Terrace", "Big terrace with a pool", Direction.noGo, Direction.noGo, 3, Direction.noGo, terraceList));
 
         //Create player and a start room location
         hero = new Character("Chase Rabbit", "Drunk and disoriented",playerList, map.get(0));
         police = new Character("Justin Law", "Righteous Police",null, map.get(4));
     }
+        public Character getHero() {
+            return hero;
+        }
 
     public void allCommands() {
         String command;
@@ -110,7 +115,7 @@ public class Game {
                 if(commandParts.length<2) {
                     System.out.println("You need to use and item. Check your inventory");}
                 if (commandParts.length >= 2) {
-                   //use = commandParts[1];
+                    use = commandParts[1];
                     useObject();
                 }
             }
@@ -118,10 +123,6 @@ public class Game {
 
         }
         System.out.println("Thank you for giving up. You didn't have what it took anyway");
-    }
-
-    public Character getHero() {
-        return hero;
     }
 
     //Assigns current to variable Room l
@@ -177,7 +178,7 @@ public class Game {
     }
 
     public void takeObject() {
-        boolean object_is_found = false;
+        boolean objectFound = false;
 
         for(Item loop : hero.getLocation().getRoomList()) {
             Item t = loop;
@@ -186,32 +187,37 @@ public class Game {
                 playerList.add(new Treasure(t.name, t.description));
                 System.out.println(t.name + " taken!");
                 hero.getLocation().getRoomList().remove(loop);
-                object_is_found = true;
+                objectFound = true;
                 break;
             }
         }
-            if (!object_is_found) {
+            if (!objectFound) {
                 System.out.println("Are you sure the item exists in this room?");
             }
     }
 
     public void useObject() {
+        boolean useObjects = false;
 
         for(Item list : playerList) {
             Item l = list;
 
             //Open bedroom door to hallway with key
-            if (list.name.equalsIgnoreCase("key")) {
-                if(hero.getLocation().getName().equals("Master bedroom")) {
-                    System.out.println("Congratulations, you can use a key, door is now open!");
-                    map.get(0).setSouth(2);
-                }
-                else {
-                    System.out.println("Cant use the key in this room");
-                }
+            if (list.name.equalsIgnoreCase("key") && (use.equals("key") && hero.getLocation().getName().equals("Master bedroom"))) {
+                System.out.println("Congratulations, you can use a key, door is now open!");
+                map.get(0).setSouth(2);
+                useObjects = true;
             }
+            //Open living room door to terrace with crowbar
+            if (list.name.equalsIgnoreCase("crowbar") && (use.equals("crowbar") && hero.getLocation().getName().equals("Living room"))) {
+                System.out.println("You successfully open the door with pure strength and crowbar");
+                map.get(3).setEast(4);
+            }
+
+
         }
-    }
+
+}
 
     private void updateOutput(int roomNumber) {
         // if roomNumber = noGo, display Cant go here, otherwise display name and description of room
@@ -228,18 +234,23 @@ public class Game {
         updateOutput(moveTo(hero,Direction.north));
     }
     public void goSouth() {
-            if (hero.getLocation().getName() == "Master bedroom") {
-                System.out.println("Locked door, use keys, maybe look in the kitchen");
-            }
-            else {
-                updateOutput(moveTo(hero, Direction.south));
+        if((hero.getLocation().getName() == "Master bedroom") && (map.get(0).getSouth() == Direction.noGo)){
+            System.out.println("Locked door, use keys, maybe look in the kitchen");
+        }
+        else {
+            updateOutput(moveTo(hero, Direction.south));
         }
     }
     public void goWest() {
         updateOutput(moveTo(hero, Direction.west));
     }
     public void goEast() {
-        updateOutput(moveTo(hero, Direction.east));
+        if((hero.getLocation().getName() == "Living room") && (map.get(3).getEast() == Direction.noGo)) {
+          System.out.println("Broken door, you need to bend it up with something");
+        }
+        else {
+            updateOutput(moveTo(hero, Direction.east));
+        }
     }
 
     public void intro(){
@@ -257,6 +268,10 @@ public class Game {
 
 
         }
+    public void police(){
+        System.out.println();
+
+    }
 
 
 
