@@ -24,10 +24,10 @@ public class Game {
         //Arraylists for things
         bedroomList.add(new Treasure("Clothes", "Your trashy clothes"));
         bedroomList.add(new Treasure("Junk", "Test"));
-        kitchenList.add(new Treasure("Key","Is this keys to the locked door?"));
+        kitchenList.add(new Treasure("Key","Is this keys to the bedroom door?"));
         hallwayList.add(new Treasure("Wallet","Its a note in your wallet"));
         hallwayList.add(new Treasure("Crowbar","Can be used to open locked doors"));
-        livingRoomList.add(new Treasure("Mobile phone", "Its your phone!"));
+        livingRoomList.add(new Treasure("Phone", "Its your phone!"));
         terraceList.add(new Treasure("Pepper spray", "Use it for protection"));
 
         //Create rooms, possible exits created. (N, S, E, W) Ex Master bedroom. Integer 2 is represented as south. Leading to Arraylist at index 2 which is Hallway
@@ -41,9 +41,9 @@ public class Game {
         hero = new Character("Chase Rabbit", "Drunk and disoriented",playerList, map.get(0));
         police = new Character("Justin Law", "Righteous Police",null, map.get(4));
     }
-        public Character getHero() {
-            return hero;
-        }
+    public Character getHero() {
+        return hero;
+    }
 
     public void allCommands() {
         String command;
@@ -150,28 +150,28 @@ public class Game {
                 exit = Direction.noGo; //Stay in same room
                 break;
         }
-                if (exit != Direction.noGo) {
-                   hero.setLocation(map.get(exit));
-            }
+        if (exit != Direction.noGo) {
+            hero.setLocation(map.get(exit));
+        }
 
         return exit;
     }
 
-        //Print out playerlist/inventory content
-        public void showInventory() {
-            if(playerList.size() == 0) {
-                System.out.println("You have nothing you poor bastard");
-            }
-
-            for(Item play : playerList) {
-                     System.out.println("You have " + play.name + ", " + play.description);
-                }
+    //Print out playerlist/inventory content
+    public void showInventory() {
+        if(playerList.size() == 0) {
+            System.out.println("You have nothing you poor bastard");
         }
+
+        for(Item play : playerList) {
+            System.out.println(play.name + ", " + play.description);
+        }
+    }
 
     //Print out items in room
     public void look(Character drunkenHero) {
         System.out.println("Things in this room:\n"
-                          +"-------------------");
+                +"-------------------");
         for(Item loop : hero.getLocation().getRoomList()) {
             System.out.println(loop.name + ", " + loop.description);
         }
@@ -191,13 +191,13 @@ public class Game {
                 break;
             }
         }
-            if (!objectFound) {
-                System.out.println("Are you sure the item exists in this room?");
-            }
+        if (!objectFound) {
+            System.out.println("Are you sure the item exists in this room?");
+        }
     }
 
     public void useObject() {
-        boolean useObjects = false;
+        int objectUsed = 0;
 
         for(Item list : playerList) {
             Item l = list;
@@ -206,18 +206,25 @@ public class Game {
             if (list.name.equalsIgnoreCase("key") && (use.equals("key") && hero.getLocation().getName().equals("Master bedroom"))) {
                 System.out.println("Congratulations, you can use a key, door is now open!");
                 map.get(0).setSouth(2);
-                useObjects = true;
+                moveTo(hero, Direction.south);
+                updateOutput(2);
+                objectUsed++;
             }
             //Open living room door to terrace with crowbar
             if (list.name.equalsIgnoreCase("crowbar") && (use.equals("crowbar") && hero.getLocation().getName().equals("Living room"))) {
-                System.out.println("You successfully open the door with pure strength and crowbar");
+                System.out.println("You successfully opened the door with pure strength and a crowbar.");
                 map.get(3).setEast(4);
+                moveTo(hero, Direction.east);
+                updateOutput(4);
+                police();
+                objectUsed++;
             }
 
-
         }
-
-}
+        if(objectUsed < 1){
+            System.out.println("Cant use this item here, or maybe you dont have it?");
+        }
+    }
 
     private void updateOutput(int roomNumber) {
         // if roomNumber = noGo, display Cant go here, otherwise display name and description of room
@@ -225,7 +232,7 @@ public class Game {
             System.out.println("Can't go here, it's no door!");
         }
         else {
-            System.out.println("You are in " + hero.getLocation().getName() + ". " + hero.getLocation().getDescription());
+            System.out.println("You are now in the " + hero.getLocation().getName() + ". " + hero.getLocation().getDescription());
         }
     }
 
@@ -246,7 +253,7 @@ public class Game {
     }
     public void goEast() {
         if((hero.getLocation().getName() == "Living room") && (map.get(3).getEast() == Direction.noGo)) {
-          System.out.println("Broken door, you need to bend it up with something");
+            System.out.println("Broken door, you need to bend it up with something");
         }
         else {
             updateOutput(moveTo(hero, Direction.east));
@@ -264,12 +271,13 @@ public class Game {
                 "                   |_|   \n\nYou wake up alone and confused in a bed.\n" +
                 "You have a small recollection of a party in a mansion. Looks like you still are there.\n" +
                 "But where are your stuff and what the hell happened yesterday?\n" +
-                "You have a bad feeling about this. Something is wrong, find your stuff and get out!\n");
+                "You have a bad feeling about this. Something is wrong, find your stuff and get out!\n" +
+                "\nType help to see valid commands\n");
 
 
-        }
+    }
     public void police(){
-        System.out.println();
+        System.out.println("The police is here, time to panic! you got all your stuff right?");
 
     }
 
