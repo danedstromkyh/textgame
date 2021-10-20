@@ -18,6 +18,10 @@ public Character(String inName, String inDescription, ArrayList<Treasure>inPlaye
 
 }
 
+    public String getName() {
+        return name;
+    }
+
     public Room getLocation() {
         return location;
     }
