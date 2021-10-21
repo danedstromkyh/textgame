@@ -29,7 +29,7 @@ public class Music {
         }
     }
 
-    public void chooseSong(String inSong) {
+    public void delaySong(String inSong) {
         //song = inSong;
         int timeToWait = 20; //second
         playMusic(inSong);

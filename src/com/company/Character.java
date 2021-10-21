@@ -26,7 +26,9 @@ public Character(String inName, String inDescription, ArrayList<Treasure>inPlaye
         return location;
     }
 
-    public void setLocation(Room inlocation) {
-        this.location = inlocation;
+
+
+    public void setLocation(Room inLocation) {
+        this.location = inLocation;
     }
 }

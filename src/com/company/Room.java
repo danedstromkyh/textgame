@@ -3,6 +3,7 @@ package com.company;
 import java.util.ArrayList;
 
 public class Room extends Item {
+
     //protected ThingList roomItems;
     private Treasure roomItems;
     public int north, south, west, east, locked;
@@ -19,8 +20,10 @@ public class Room extends Item {
     }
 
     public ArrayList<Treasure> getRoomList() {
+
         return roomList;
     }
+
 
     public int getNorth() {
         return north;

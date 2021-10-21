@@ -9,16 +9,26 @@ public class TestGame {
     Room room = new Room("Room1", "Its a nice room", -1, -1, -1, -1, null);
 
     @Test
+    //moving test player from hall to living room
     public void movePlayer() {
         int result = game.moveTo(player, Direction.east);
         assertEquals(3, result);
     }
 
     @Test
+    //get the player name of test character
     public void getPlayerName() {
         String result = player.getName();
         assertEquals("Test", result);
     }
+
+    @Test
+    //get the description from test room
+    public void getRoomDescription() {
+        String result = room.getDescription();
+        assertEquals("Its a nice room", result);
+    }
 }
+
 
 

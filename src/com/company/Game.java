@@ -18,7 +18,6 @@ public class Game {
     public ArrayList<Treasure> terraceList = new ArrayList<Treasure>();
     boolean running = true;
     private Character hero;
-    private String take;
     private String use;
 
     public Game() {
@@ -34,6 +33,7 @@ public class Game {
         hallwayList.add(new Treasure("Crowbar","Can be used to open locked doors"));
         livingRoomList.add(new Treasure("Phone", "Its your phone!"));
         terraceList.add(new Treasure("Pepper spray", "Use it for protection"));
+
 
         //Create rooms, possible exits created. (N, S, E, W) Ex Master bedroom. Integer 2 is represented as south. Leading to Arraylist at index 2 which is Hallway
         map.add(new Room("Master bedroom", "A dark messy room with a huge bed", Direction.noGo, Direction.noGo, Direction.noGo, 1, bedroomList));
@@ -63,7 +63,7 @@ public class Game {
             command = command.toLowerCase();
             String[] commandParts = command.split(" ");
 
-            if (commandParts.length < 2 && (!"take".equals(commandParts[0])) && (!"use".equals(commandParts[0])))
+            if (commandParts.length < 2)
             {
                 switch (command) {
                     case "go":
@@ -74,6 +74,12 @@ public class Game {
                         break;
                     case "look":
                         look(getHero());
+                        break;
+                    case "take":
+                        System.out.println("You need to specify an item to take. Try look command");
+                        break;
+                    case "use":
+                        System.out.println("You need to use an item. Check your inventory");
                         break;
                     case "inventory":
                         showInventory();
@@ -108,29 +114,16 @@ public class Game {
                             System.out.println("You can't go there. Use cardinal directions for moving. Ex go north");
                     }
                 }
-
             }
-            if (commandParts[0].equals("take")) {
-                if(commandParts.length<2) {
-                    System.out.println("You need to take something. Use look to see available items");}
-                if (commandParts.length >= 2) {
-                    take = commandParts[1];
-                    takeObject();
-
+            if (commandParts[0].equals("take") && commandParts.length >= 2 ) {
+                    takeObject(commandParts[1]);
                 }
-            }
-            if(commandParts[0].equals("use")) {
-                if(commandParts.length<2) {
-                    System.out.println("You need to use and item. Check your inventory");}
-                if (commandParts.length >= 2) {
+
+            if (commandParts[0].equals("use") && commandParts.length >= 2 ) {
                     use = commandParts[1];
                     useObject();
-                }
             }
-
-
         }
-
     }
 
     //Assigns current to variable Room l
@@ -177,24 +170,25 @@ public class Game {
     }
 
     //Print out items in room
-    public void look(Character drunkenHero) {
+    public void look(Character hero) {
         System.out.println("Things in this room:\n"
                 +"-------------------");
-        for(Item loop : hero.getLocation().getRoomList()) {
-            System.out.println(loop.name + ", " + loop.description);
+        for(Item l : hero.getLocation().getRoomList()) {
+            System.out.println(l.name + ", " + l.description);
         }
     }
 
-    public void takeObject() {
-        boolean objectFound = false;
 
-        for(Treasure list : hero.getLocation().getRoomList()) {
+    public void takeObject(String command) {
+        boolean objectFound = false;
+        ArrayList<Treasure> roomItems = hero.getLocation().getRoomList();
+        for(Treasure list : roomItems) {
             Item l = list;
 
-            if (l.name.equalsIgnoreCase(take)) {
+            if (l.name.equalsIgnoreCase(command)) {
                 playerList.add(new Treasure(l.name, l.description));
                 System.out.println(l.name + " taken!");
-                hero.getLocation().getRoomList().remove(l);
+                roomItems.remove(l);
                 objectFound = true;
                 break;
             }
@@ -204,32 +198,45 @@ public class Game {
         }
     }
 
-    public void useObject() {
-        boolean objectUsed = false;
+    public boolean canUse(String object, String inRoom){
+        String s = hero.getLocation().getName();
+        boolean test = false;
 
         for(Treasure list : playerList) {
-
-
-            if (list.name.equalsIgnoreCase("key") && (use.equals("key") && hero.getLocation().getName().equals("Master bedroom"))) {
-                System.out.println("Congratulations, you can use a key, door is now open!");
-                map.get(0).setSouth(2);
-                moveTo(hero, Direction.south);
-                updateOutput(2);
-                objectUsed = true;
-            }
-            if (list.name.equalsIgnoreCase("crowbar") && (use.equals("crowbar") && hero.getLocation().getName().equals("Living room"))) {
-                System.out.println("You successfully opened the door with pure strength and a crowbar.\n");
-                map.get(3).setEast(4);
-                moveTo(hero, Direction.east);
-                updateOutput(4);
-                police();
-                objectUsed = true;
+            if(use.equals(object) && list.name.equalsIgnoreCase(object)) {
+                if(s == inRoom){
+                    test = true;
+                    break;
+                }
             }
         }
-        if (!objectUsed) {
+        return test;
+    }
+
+    public void useObject() {
+        boolean objectFound = false;
+        if(canUse("key", "Master bedroom")) {
+            System.out.println("Congratulations, you can use a key, door is now open!");
+            map.get(0).setSouth(2);
+            moveTo(hero, Direction.south);
+            updateOutput(2);
+            objectFound = true;
+        }
+        if(canUse("crowbar","Living room")) {
+            System.out.println("You successfully opened the door with pure strength and a crowbar.\n");
+            map.get(3).setEast(4);
+            moveTo(hero, Direction.east);
+            updateOutput(4);
+            police();
+            music.playMusic("police.wav");
+            objectFound = true;
+        }
+
+        if(!objectFound) {
             System.out.println("Can't use this item here or maybe you don't even have it?");
         }
     }
+
 
     private void updateOutput(int roomNumber) {
         // if roomNumber = noGo, display Cant go here, otherwise display name and description of room
@@ -240,6 +247,16 @@ public class Game {
             System.out.println("You are now in the " + hero.getLocation().getName() + ". " + hero.getLocation().getDescription());
         }
     }
+    //Checks if doors are locked
+    public boolean locked(String inRoom, int lockedDoor){
+        Boolean locked = false;
+        String s = hero.getLocation().getName();
+        if(s.equals(inRoom) && (lockedDoor == Direction.noGo)) {
+            locked = true;
+        }
+        return locked;
+    }
+
 
     //Moves player by calling the moveTo method
     public void goNorth() {
@@ -247,7 +264,8 @@ public class Game {
     }
 
     public void goSouth() {
-        if((hero.getLocation().getName() == "Master bedroom") && (map.get(0).getSouth() == Direction.noGo)){
+        int bedroomDoor = map.get(0).getSouth();
+        if(locked("Master bedroom",bedroomDoor)) {
             System.out.println("Locked door, use keys, maybe look in the kitchen");
         }
         else {
@@ -260,11 +278,35 @@ public class Game {
     }
 
     public void goEast() {
-        if((hero.getLocation().getName() == "Living room") && (map.get(3).getEast() == Direction.noGo)) {
+        int livingRDoor = map.get(3).getEast();
+        if(locked("Living room", livingRDoor)) {
             System.out.println("Broken door, you need to bend it up with something");
         }
         else {
             updateOutput(moveTo(hero, Direction.east));
+        }
+    }
+
+    public void police(){
+        Scanner police = new Scanner(System.in);
+        String choose;
+        System.out.println("You have two choices. Fight the coppers or run like the wind\n"+
+                "Commands: Fight or run\n");
+        System.out.print("> ");
+        choose = police.nextLine();
+
+        if(choose.equalsIgnoreCase("fight")) {
+            System.out.println("Game over! You never fight the police, rookie mistake. You go straight to jail. Thanks for playing though");
+            music.delaySong("fought.wav");
+            running = false;
+        }
+        if(choose.equalsIgnoreCase("run")) {
+            music.playMusic("hooray.wav");
+            JOptionPane.showMessageDialog(null,"Good choice! You are now free to roam the seven seas again. Thanks for playing!");
+            running = false;
+       }
+        if (!choose.equalsIgnoreCase("run") && !choose.equalsIgnoreCase("fight")){
+            police();
         }
     }
 
@@ -283,34 +325,4 @@ public class Game {
                 "\nType help to see valid commands\n");
 
     }
-    public void police(){
-        Scanner police = new Scanner(System.in);
-        String choose;
-        System.out.println("You have two choices. Fight the coppers or run like the wind\n"+
-                "Commands: Fight or run\n");
-
-        System.out.print("> ");
-        choose = police.nextLine();
-        if(choose.equalsIgnoreCase("fight")) {
-            music.chooseSong("fought.wav");
-            System.out.println("Game over! You never fight the police, rookie mistake. You go straight to jail. Thanks for playing though");
-            running = false;
-
-        }
-        if(choose.equalsIgnoreCase("run")) {
-            music.playMusic("hooray.wav");
-            JOptionPane.showMessageDialog(null,"Good choice! You are now free to roam the seven seas again. Thanks for playing!");
-            running = false;
-
-       }
-        if (!choose.equalsIgnoreCase("run") && !choose.equalsIgnoreCase("fight")){
-            police();
-        }
-
-
-    }
-
-
-
-
 }
