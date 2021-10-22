@@ -8,6 +8,7 @@ import java.util.*;
 public class Game {
     Music music = new Music();
     CommandHelp help = new CommandHelp();
+    MapPicture mapPicture = new MapPicture();
     public ArrayList<Room> map = new ArrayList<Room>();
     public ArrayList<Treasure> items = new ArrayList<Treasure>();
     public ArrayList<Treasure> playerList = new ArrayList<Treasure>();
@@ -29,6 +30,7 @@ public class Game {
         bedroomList.add(new Treasure("Clothes", "Your trashy clothes"));
         bedroomList.add(new Treasure("Junk", "Test"));
         kitchenList.add(new Treasure("Key","Is this keys to the bedroom door?"));
+        kitchenList.add(new Treasure("Map","Look like a blueprint over the place"));
         hallwayList.add(new Treasure("Wallet","Its a note in your wallet"));
         hallwayList.add(new Treasure("Crowbar","Can be used to open locked doors"));
         livingRoomList.add(new Treasure("Phone", "Its your phone!"));
@@ -44,8 +46,6 @@ public class Game {
 
         //Create player and a start room location
         hero = new Character("Chase Rabbit", "Drunk and disoriented",playerList, map.get(0));
-
-
     }
 
     public Character getHero() {
@@ -84,6 +84,9 @@ public class Game {
                     case "inventory":
                         showInventory();
                         break;
+                    case "map":
+                        mapPicture.picture();
+                        break;
                     case "quit":
                         System.out.println("Thank you for giving up. You didn't have what it took anyway");
                         running = false;
@@ -117,7 +120,11 @@ public class Game {
             }
             if (commandParts[0].equals("take") && commandParts.length >= 2 ) {
                     takeObject(commandParts[1]);
+                    if(commandParts[1].equals("map")) {
+                        System.out.println("You found a blueprint over your location. Type map to see it");
+                    }
                 }
+
 
             if (commandParts[0].equals("use") && commandParts.length >= 2 ) {
                     use = commandParts[1];
@@ -126,7 +133,7 @@ public class Game {
         }
     }
 
-    //Assigns current to variable Room l
+
     public int moveTo(Character hero, Direction latitude) {
 
         int exit;
@@ -156,6 +163,35 @@ public class Game {
         }
 
         return exit;
+    }
+
+    //Moves player by calling the moveTo method, and checks if any doors are locked
+    public void goNorth() {
+        updateOutput(moveTo(hero,Direction.north));
+    }
+
+    public void goSouth() {
+        int bedroomDoor = map.get(0).getSouth();
+        if(locked("Master bedroom",bedroomDoor)) {
+            System.out.println("Locked door, use keys, maybe look in the kitchen");
+        }
+        else {
+            updateOutput(moveTo(hero, Direction.south));
+        }
+    }
+
+    public void goWest() {
+        updateOutput(moveTo(hero, Direction.west));
+    }
+
+    public void goEast() {
+        int livingRDoor = map.get(3).getEast();
+        if(locked("Living room", livingRDoor)) {
+            System.out.println("Broken door, you need to bend it up with something");
+        }
+        else {
+            updateOutput(moveTo(hero, Direction.east));
+        }
     }
 
     //Print out playerlist/inventory content
@@ -228,7 +264,6 @@ public class Game {
             moveTo(hero, Direction.east);
             updateOutput(4);
             police();
-            music.playMusic("police.wav");
             objectFound = true;
         }
 
@@ -257,55 +292,27 @@ public class Game {
         return locked;
     }
 
-
-    //Moves player by calling the moveTo method
-    public void goNorth() {
-        updateOutput(moveTo(hero,Direction.north));
-    }
-
-    public void goSouth() {
-        int bedroomDoor = map.get(0).getSouth();
-        if(locked("Master bedroom",bedroomDoor)) {
-            System.out.println("Locked door, use keys, maybe look in the kitchen");
-        }
-        else {
-            updateOutput(moveTo(hero, Direction.south));
-        }
-    }
-
-    public void goWest() {
-        updateOutput(moveTo(hero, Direction.west));
-    }
-
-    public void goEast() {
-        int livingRDoor = map.get(3).getEast();
-        if(locked("Living room", livingRDoor)) {
-            System.out.println("Broken door, you need to bend it up with something");
-        }
-        else {
-            updateOutput(moveTo(hero, Direction.east));
-        }
-    }
-
     public void police(){
+        music.playMusic("police.wav");
         Scanner police = new Scanner(System.in);
         String choose;
         System.out.println("You have two choices. Fight the coppers or run like the wind\n"+
                 "Commands: Fight or run\n");
         System.out.print("> ");
         choose = police.nextLine();
+        choose = choose.toLowerCase();
 
-        if(choose.equalsIgnoreCase("fight")) {
+        if(choose.equals("fight")) {
             System.out.println("Game over! You never fight the police, rookie mistake. You go straight to jail. Thanks for playing though");
             music.delaySong("fought.wav");
             running = false;
         }
-        if(choose.equalsIgnoreCase("run")) {
+        if(choose.equals("run")) {
             music.playMusic("hooray.wav");
             JOptionPane.showMessageDialog(null,"Good choice! You are now free to roam the seven seas again. Thanks for playing!");
             running = false;
        }
-        if (!choose.equalsIgnoreCase("run") && !choose.equalsIgnoreCase("fight")){
+        if (!choose.equals("run") && !choose.equalsIgnoreCase("fight")){
             police();
         }
     }

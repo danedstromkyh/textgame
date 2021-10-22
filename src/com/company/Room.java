@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 public class Room extends Item {
 
-    //protected ThingList roomItems;
-    private Treasure roomItems;
+    //private Treasure roomItems;
     public int north, south, west, east, locked;
     private ArrayList<Treasure>roomList;
 
-    //Create room with name, description and possible exits that represents different latitudes
+    //Create room with name, description and possible exits that represents different cardinal directions
     public Room(String inName, String inDescription, int inNorth, int inSouth, int inWest, int inEast, ArrayList<Treasure>inRoomList) {
         super(inName, inDescription);
         roomList = inRoomList;
