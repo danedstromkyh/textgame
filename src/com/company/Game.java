@@ -16,34 +16,39 @@ public class Game {
     public ArrayList<Treasure> kitchenList = new ArrayList<Treasure>();
     public ArrayList<Treasure> hallwayList = new ArrayList<Treasure>();
     public ArrayList<Treasure> livingRoomList = new ArrayList<Treasure>();
-    public ArrayList<Treasure> terraceList = new ArrayList<Treasure>();
-    boolean running = true;
+    boolean running;
     private static int noExit = -1;
     private Character hero;
 
 
     public Game() {
         initGame();
+        running = true;
+    }
+
+    public void run() {
+        while (running) {
+            userCommands();
+        }
     }
 
     private void initGame() {
         //Arraylists for things
-        bedroomList.add(new Treasure("Clothes", "Your trashy clothes"));
-        bedroomList.add(new Treasure("Junk", "Test"));
+        bedroomList.add(new Treasure("Clothes", "Smart, it's a good idea to get dressed"));
         kitchenList.add(new Treasure("Key","Is this keys to the bedroom door?"));
-        kitchenList.add(new Treasure("Map","Look like a blueprint over the place"));
-        hallwayList.add(new Treasure("Wallet","Its a note in your wallet"));
+        kitchenList.add(new Treasure("Map","Looks like a blueprint over the place"));
+        hallwayList.add(new Treasure("Wallet","Your wallet and still everything in it. Lucky!"));
         hallwayList.add(new Treasure("Crowbar","Can be used to open locked doors"));
-        livingRoomList.add(new Treasure("Phone", "Its your phone!"));
-        terraceList.add(new Treasure("Pepper spray", "Use it for protection"));
+        livingRoomList.add(new Treasure("Phone", "Its your phone! Needs charging though. But lets do that later"));
 
 
-        //Create rooms, possible exits created. (N, S, E, W) Ex Master bedroom. Integer 2 is represented as south. Leading to Arraylist at index 2 which is Hallway
+
+        //Create rooms, possible exits created. (N, S, W, E) Ex Master bedroom. Integer 2 is represented as south. Leading to Arraylist at index 2 which is Hallway
         map.add(new Room("Master bedroom", "A dark messy room with a huge bed", noExit, noExit, noExit, 1, bedroomList));
         map.add(new Room("Kitchen", "looks like its been a party here. Bottles all over", noExit, noExit, 0, noExit, kitchenList));
         map.add(new Room("Hallway", "Long hallway, smells like liquor", 0, noExit, noExit, 3, hallwayList));
         map.add(new Room("Living room", "A bunch of passed out people and loud music", noExit, noExit, 2, noExit, livingRoomList));
-        map.add(new Room("Terrace", "The police is here, they are looking for you!", noExit, noExit, 3, noExit, terraceList));
+        map.add(new Room("Terrace", "The police is here, they are looking for you!", noExit, noExit, 3, noExit, null));
 
         //Create player and a start room location
         hero = new Character("Chase Rabbit", "Drunk and disoriented",playerList, map.get(0));
@@ -60,62 +65,56 @@ public class Game {
 
     }
 
-    public void allCommands() {
+    public void userCommands() {
         String command;
         Scanner in = new Scanner(System.in);
 
+        System.out.print("> ");
+        command = in.nextLine();
 
-        while (running) {
-            System.out.print("> ");
-            command = in.nextLine();
+        splitCommand(command);
 
-            splitCommand(command);
-
-                switch (splitCommand(command)[0]) {
-                    case "go":
-                        moveTo(hero, splitCommand(command));
-                        break;
-                    case "help":
-                        help.showCommands();
-                        break;
-                    case "look":
-                        look(getHero());
-                        break;
-                    case "take":
-                        takeObject(splitCommand(command));
-                        break;
-                    case "use":
-                        useObject(splitCommand(command));
-                        break;
-                    case "inventory":
-                        showInventory();
-                        break;
-                    case "map":
-                        mapPicture.picture();
-                        break;
-                    case "quit":
-                        System.out.println("Thank you for giving up. You didn't have what it took anyway");
-                        running = false;
-                        break;
-                    default:
-                        System.out.println("Are you drunk? Type help for valid commands");
+        switch (splitCommand(command)[0]) {
+            case "go":
+                moveTo(hero, splitCommand(command));
+                break;
+            case "help":
+                help.showCommands();
+                break;
+            case "look":
+                look(getHero());
+                break;
+            case "take":
+                takeObject(splitCommand(command));
+                break;
+            case "use":
+                useObject(splitCommand(command));
+                break;
+            case "inventory":
+                showInventory();
+                break;
+            case "map":
+                mapPicture.picture();
+                break;
+            case "quit":
+                System.out.println("Thank you for giving up. You didn't have what it took anyway");
+                running = false;
+                break;
+            default:
+                System.out.println("Are you drunk? Type help for valid commands");
             }
         }
-    }
 
     public int moveTo(Character hero, String[] command) {
         int exit;
-
         Room l = hero.getLocation();
-
 
         if (command.length < 2) {
             System.out.println("You need to use a direction. Ex go north");
-            allCommands();
+            userCommands();
         }
 
         switch (command[1]) {
-
             case "north":
                 exit = l.getNorth();
                 goNorth(exit);
@@ -148,7 +147,7 @@ public class Game {
     public void goSouth(int exit) {
         int bedroomDoor = map.get(0).getSouth();
         if(locked("Master bedroom",bedroomDoor)) {
-            System.out.println("Locked door, use keys, maybe look in the kitchen");
+            System.out.println("Locked door, use the keys sleepy head");
         }
         else {
             moveCharacter(exit);
@@ -173,20 +172,19 @@ public class Game {
     }
 
     private void moveCharacter(int exit){
-        if (exit != -1) {
+        if (exit != noExit) {
             hero.setLocation(map.get(exit));
         }
             updateOutput(exit);
     }
 
     private void updateOutput(int exit) {
-    // if roomNumber = noGo, display Cant go here, otherwise display name and description of room
-    if  (exit == -1) {
-        System.out.println("Can't go here, it's no door!");
-    }
-    else {
-        hero.setLocation(map.get(exit));
-        System.out.println("You are now in the " + hero.getLocation().getName() + ". " + hero.getLocation().getDescription());
+        Room room = hero.getLocation();
+        if  (exit == noExit) {
+            System.out.println("Can't go here, it's no door!");
+        }
+        else {
+            System.out.println("You are now in the " + room.getName() + ". " + room.getDescription());
         }
     }
 
@@ -223,7 +221,6 @@ public class Game {
     public void takeObject(String[] command) {
         if (command.length < 2) {
             System.out.println("You need to specify an item to take. Try look command");
-            allCommands();
         }
 
         boolean objectFound = false;
@@ -238,6 +235,11 @@ public class Game {
                 objectFound = true;
                 break;
             }
+        }
+
+        if(command[1].equals("map")) {
+            System.out.println("You found a blueprint over your location. Type map to see it");
+
         }
         if (!objectFound) {
             System.out.println("Are you sure the item exists in this room?");
@@ -262,23 +264,20 @@ public class Game {
     public void useObject(String[] command) {
         if (command.length < 2) {
             System.out.println("You need to use an item. Check your inventory");
-            allCommands();
-        }
-        if(splitCommand(command[1]).equals("map")) {
-            System.out.println("You found a blueprint over your location. Type map to see it");
+            userCommands();
         }
 
         boolean objectFound = false;
         if(canUse(command[1], "key", "Master bedroom")) {
-            System.out.println("Congratulations, you can use a key, door is now open!");
+            System.out.println("Congratulations, you can use a key, door is now open!\n");
             map.get(0).setSouth(2);
-            updateOutput(2);
+            moveCharacter(2);
             objectFound = true;
         }
         if(canUse(command[1],"crowbar","Living room")) {
             System.out.println("You successfully opened the door with pure strength and a crowbar.\n");
             map.get(3).setEast(4);
-            updateOutput(4);
+            moveCharacter(4);
             police();
             objectFound = true;
         }
@@ -308,7 +307,7 @@ public class Game {
             JOptionPane.showMessageDialog(null,"Good choice! You are now free to roam the seven seas again. Thanks for playing!");
             running = false;
        }
-        if (!choose.equals("run") && !choose.equalsIgnoreCase("fight")){
+        if (!choose.equals("run") && !choose.equals("fight")){
             police();
         }
     }

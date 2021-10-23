@@ -12,7 +12,7 @@ public class Main {
         music.playMusic("welcome.wav");
         JOptionPane.showMessageDialog(null,"Welcome to Escape the mansion! Press OK to start");
         game.intro();
-        game.allCommands();
+        game.run();
 
     }
 
