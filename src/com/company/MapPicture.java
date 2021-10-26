@@ -1,20 +1,20 @@
 package com.company;
 
-import java.awt.Image;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
 
 public class MapPicture {
 
-    public void picture(){
+    public static void picture() {
+        File f = new File("./blueprint.jpg");
+        Desktop dt = Desktop.getDesktop();
         try {
-            Image picture = ImageIO.read(new File("blueprint.jpg"));
-
-            Process photo = new ProcessBuilder("mspaint","blueprint.jpg").start();
+            dt.open(f);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 }

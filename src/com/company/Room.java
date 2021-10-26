@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 public class Room extends Item {
 
-    //private Treasure roomItems;
-    public int north, south, west, east, locked;
+    public int north, south, west, east;
     private ArrayList<Treasure>roomList;
 
     //Create room with name, description and possible exits that represents different cardinal directions

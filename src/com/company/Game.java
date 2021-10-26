@@ -10,14 +10,13 @@ public class Game {
     CommandHelp help = new CommandHelp();
     MapPicture mapPicture = new MapPicture();
     public ArrayList<Room> map = new ArrayList<Room>();
-    public ArrayList<Treasure> items = new ArrayList<Treasure>();
     public ArrayList<Treasure> playerList = new ArrayList<Treasure>();
     public ArrayList<Treasure> bedroomList = new ArrayList<Treasure>();
     public ArrayList<Treasure> kitchenList = new ArrayList<Treasure>();
     public ArrayList<Treasure> hallwayList = new ArrayList<Treasure>();
     public ArrayList<Treasure> livingRoomList = new ArrayList<Treasure>();
     boolean running;
-    private static int noExit = -1;
+    private final int noExit = -1;
     private Character hero;
 
 
@@ -41,13 +40,11 @@ public class Game {
         hallwayList.add(new Treasure("Crowbar","Can be used to open locked doors"));
         livingRoomList.add(new Treasure("Phone", "Its your phone! Needs charging though. But lets do that later"));
 
-
-
         //Create rooms, possible exits created. (N, S, W, E) Ex Master bedroom. Integer 2 is represented as south. Leading to Arraylist at index 2 which is Hallway
         map.add(new Room("Master bedroom", "A dark messy room with a huge bed", noExit, noExit, noExit, 1, bedroomList));
         map.add(new Room("Kitchen", "looks like its been a party here. Bottles all over", noExit, noExit, 0, noExit, kitchenList));
-        map.add(new Room("Hallway", "Long hallway, smells like liquor", 0, noExit, noExit, 3, hallwayList));
-        map.add(new Room("Living room", "A bunch of passed out people and loud music", noExit, noExit, 2, noExit, livingRoomList));
+        map.add(new Room("Hallway", "Long corridor", 0, noExit, noExit, 3, hallwayList));
+        map.add(new Room("Living room", "The music is still pumping but where are the people?", noExit, noExit, 2, noExit, livingRoomList));
         map.add(new Room("Terrace", "The police is here, they are looking for you!", noExit, noExit, 3, noExit, null));
 
         //Create player and a start room location
@@ -58,6 +55,7 @@ public class Game {
         return hero;
     }
 
+    //Splits upp command input into String[]
     public String[] splitCommand(String command){
         command = command.toLowerCase();
         String commandParts[] = command.split(" ");
@@ -65,6 +63,7 @@ public class Game {
 
     }
 
+    //Method with all the commands available
     public void userCommands() {
         String command;
         Scanner in = new Scanner(System.in);
@@ -107,88 +106,80 @@ public class Game {
 
     public int moveTo(Character hero, String[] command) {
         int exit;
+        String direction = command[1];
         Room l = hero.getLocation();
+
 
         if (command.length < 2) {
             System.out.println("You need to use a direction. Ex go north");
-            userCommands();
+            run();
         }
 
         switch (command[1]) {
             case "north":
                 exit = l.getNorth();
-                goNorth(exit);
+                goConditions(direction,exit);
                 break;
             case "south":
                 exit = l.getSouth();
-                goSouth(exit);
+                goConditions(direction,exit);
                 break;
             case "east":
                 exit = l.getEast();
-                goEast(exit);
+                goConditions(direction,exit);
                 break;
             case "west":
                 exit = l.getWest();
-                goWest(exit);
+                goConditions(direction,exit);
                 break;
             default:
-                exit = -1; //Stay in same room
+                exit = noExit; //Stay in same room
                 break;
         }
         return exit;
     }
 
-    //Moves player by calling the moveTo method, and checks if any doors are locked
-    public void goNorth(int exit) {
-        moveCharacter(exit);
-
-    }
-
-    public void goSouth(int exit) {
-        int bedroomDoor = map.get(0).getSouth();
-        if(locked("Master bedroom",bedroomDoor)) {
-            System.out.println("Locked door, use the keys sleepy head");
-        }
-        else {
-            moveCharacter(exit);
-        }
-
-    }
-
-    public void goWest(int exit) {
-        moveCharacter(exit);
-
-    }
-
-    public void goEast(int exit) {
+    //Checks if doors a blocked before moving player
+    private void goConditions(String direction, int exit) {
         int livingRDoor = map.get(3).getEast();
-        if(locked("Living room", livingRDoor)) {
-            System.out.println("Broken door, you need to bend it up with something");
+        int bedroomDoor = map.get(0).getSouth();
+
+        if(direction.equals("south")){
+            if(locked("Master bedroom",bedroomDoor)) {
+                System.out.println("Locked door, find some keys to use");
+                    return;
+            }
         }
-        else {
-            moveCharacter(exit);
+        if(direction.equals("east")) {
+
+            if(locked("Living room", livingRDoor)) {
+                if(gotAllStuff()){
+                    System.out.println("Broken door, you need to bend it up with something");
+
+                }
+                else{
+                    System.out.println("You dont have all your stuff yet! Get back and look for them");
+                }
+                return;
+            }
         }
 
+        moveCharacter(exit);
     }
 
+    //Updates output for character or shows if the door is locked
     private void moveCharacter(int exit){
-        if (exit != noExit) {
-            hero.setLocation(map.get(exit));
-        }
-            updateOutput(exit);
-    }
-
-    private void updateOutput(int exit) {
-        Room room = hero.getLocation();
         if  (exit == noExit) {
             System.out.println("Can't go here, it's no door!");
         }
-        else {
-            System.out.println("You are now in the " + room.getName() + ". " + room.getDescription());
+        else{
+            hero.setLocation(map.get(exit));
+            System.out.println("You are now in the " + hero.getLocation().getName() + ". " + hero.getLocation().getDescription());
         }
+
     }
 
-    //Checks if doors are locked
+    //Locked door method
     public boolean locked(String inRoom, int lockedDoor){
         Boolean locked = false;
         String s = hero.getLocation().getName();
@@ -210,7 +201,7 @@ public class Game {
     }
 
     //Print out items in room
-    public void look(Character hero) {
+    private void look(Character hero) {
         System.out.println("Things in this room:\n"
                 +"-------------------");
         for(Item l : hero.getLocation().getRoomList()) {
@@ -218,9 +209,10 @@ public class Game {
         }
     }
 
-    public void takeObject(String[] command) {
+    private void takeObject(String[] command) {
         if (command.length < 2) {
             System.out.println("You need to specify an item to take. Try look command");
+            run();
         }
 
         boolean objectFound = false;
@@ -246,30 +238,16 @@ public class Game {
         }
     }
 
-    public boolean canUse(String command, String object, String inRoom){
-        String s = hero.getLocation().getName();
-        boolean test = false;
-
-        for(Treasure list : playerList) {
-            if(command.equals(object) && list.name.equalsIgnoreCase(object)) {
-                if(s == inRoom){
-                    test = true;
-                    break;
-                }
-            }
-        }
-        return test;
-    }
-
-    public void useObject(String[] command) {
+    private void useObject(String[] command) {
         if (command.length < 2) {
             System.out.println("You need to use an item. Check your inventory");
-            userCommands();
+            run();
         }
 
         boolean objectFound = false;
         if(canUse(command[1], "key", "Master bedroom")) {
             System.out.println("Congratulations, you can use a key, door is now open!\n");
+            playerList.removeIf(treasure -> treasure.getName().equals("Key"));
             map.get(0).setSouth(2);
             moveCharacter(2);
             objectFound = true;
@@ -287,6 +265,41 @@ public class Game {
         }
     }
 
+    //Checks if specific command, object and room are true for useObject
+    public boolean canUse(String command, String object, String inRoom){
+        String s = hero.getLocation().getName();
+        boolean testUse = false;
+
+        for(Treasure list : playerList) {
+            if(command.equals(object) && list.name.equalsIgnoreCase(object)) {
+                if(s == inRoom){
+                    testUse = true;
+                    break;
+                }
+            }
+        }
+        return testUse;
+    }
+
+    //Checks if you picked up all your things excluding the map
+    private boolean gotAllStuff() {
+        boolean allStuff = false;
+        int allThings = 0;
+        int allThingsMap =0;
+        for(Treasure list : playerList){
+            if(list.name.equals("Map")){}
+
+            else{
+                allThings++;
+            }
+            if(allThings == 4){
+                allStuff = true;
+            }
+        }
+        return allStuff;
+    }
+
+    //End game scenario at terrace
     public void police(){
         music.playMusic("police.wav");
         Scanner police = new Scanner(System.in);
@@ -312,6 +325,7 @@ public class Game {
         }
     }
 
+    //Game intro
     public void intro(){
         System.out.println("\n _____                           _   _                                      _             \n" +
                 "|  ___|                         | | | |                                    (_)            \n" +
