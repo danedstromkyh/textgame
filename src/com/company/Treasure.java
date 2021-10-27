@@ -1,5 +1,5 @@
 package com.company;
-public class Treasure extends Item{
+public class Treasure extends Thing{
 
 
     public Treasure(String inName, String inDescription) {

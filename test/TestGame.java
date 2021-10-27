@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestGame {
     Game game = new Game();
-    Character player = new Character("Test", "test2", game.playerList, game.map.get(2));
+    Character player = new Character("Player1", game.playerList, game.map.get(2));
     Room room = new Room("Room1", "Its a nice room", -1, 2, -1, -1, game.hallwayList);
     String[] command = {"go","east"};
 
@@ -13,7 +13,7 @@ public class TestGame {
     //get the player name of test character
     public void getPlayerName() {
         String result = player.getName();
-        assertEquals("Test", result);
+        assertEquals("Player1", result);
     }
 
     @Test
@@ -24,7 +24,7 @@ public class TestGame {
     }
 
     @Test
-    //Get the arraylist "south" from testroom
+    //Get the arraylist "south" from test room
     public void getSouthArrayList() {
         int result = room.getSouth();
         assertEquals(2, result);
@@ -32,7 +32,7 @@ public class TestGame {
 
     @Test
     //moving test player from hall to living room
-    public void movePlayer() throws Exception {
+    public void movePlayer(){
         int result = game.moveTo(player, command);
         assertEquals(3, result);
     }

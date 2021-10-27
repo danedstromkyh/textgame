@@ -2,7 +2,7 @@ package com.company;
 
 import java.util.ArrayList;
 
-public class Room extends Item {
+public class Room extends Thing {
 
     public int north, south, west, east;
     private ArrayList<Treasure>roomList;

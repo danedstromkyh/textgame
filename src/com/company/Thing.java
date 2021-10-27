@@ -1,13 +1,13 @@
 package com.company;
 import java.util.ArrayList;
 
-public class Item {
+public class Thing {
 
         protected String name;
         protected String description;
 
 
-    public Item(String inName, String inDescription) {
+    public Thing(String inName, String inDescription) {
         name = inName;
         description = inDescription;
     }
@@ -20,4 +20,11 @@ public class Item {
         return description;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

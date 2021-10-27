@@ -4,14 +4,12 @@ import java.util.ArrayList;
 
 public class Character {
     String name;
-    String description;
     private Room location;
     private ArrayList<Treasure>playerList;
 
 
-public Character(String inName, String inDescription, ArrayList<Treasure>inPlayerList, Room inRoom) {
+public Character(String inName, ArrayList<Treasure>inPlayerList, Room inRoom) {
     name = inName;
-    description = inDescription;
     location = inRoom;
     playerList = inPlayerList;
 }
