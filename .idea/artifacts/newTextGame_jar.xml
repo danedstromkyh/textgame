@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="newTextGame:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/newTextGame_jar</output-path>
+    <root id="archive" name="newTextGame.jar">
+      <element id="module-output" name="newTextGame" />
+    </root>
+  </artifact>
+</component>

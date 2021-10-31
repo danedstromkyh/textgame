@@ -7,7 +7,6 @@ public class TestGame {
     Game game = new Game();
     Character player = new Character("Player1", game.playerList, game.map.get(2));
     Room room = new Room("Room1", "Its a nice room", -1, 2, -1, -1, game.hallwayList);
-    String[] command = {"go","east"};
 
     @Test
     //get the player name of test character
@@ -31,10 +30,12 @@ public class TestGame {
     }
 
     @Test
-    //moving test player from hall to living room
-    public void movePlayer(){
-        int result = game.moveTo(player, command);
-        assertEquals(3, result);
+    //Tests the split words method
+    public void splitWords() {
+        String command = "testing split method";
+        String[] result = game.splitCommand(command);
+        assertEquals("split",result[1]);
+
     }
 
     @Test
@@ -42,9 +43,8 @@ public class TestGame {
     public void getLocation() {
         String result = player.getLocation().getName();
         assertEquals("Hallway", result);
+
     }
-
-
 
 }
 

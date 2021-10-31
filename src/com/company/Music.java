@@ -16,7 +16,6 @@ public class Music {
                 Clip clip = AudioSystem.getClip();
                 clip.open(audioInput);
                 clip.start();
-
             }
             else
             {
@@ -30,13 +29,11 @@ public class Music {
     }
 
     public void delaySong(String inSong) {
-        //song = inSong;
-        int timeToWait = 20; //second
+        int timeToWait = 18; //seconds
         playMusic(inSong);
         try {
             for (int i=0; i<timeToWait ; i++) {
                 Thread.sleep(1000);
-
             }
         } catch (InterruptedException ie)
         {

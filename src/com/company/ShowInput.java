@@ -16,7 +16,6 @@ public class ShowInput {
 
         if (selectedOption == 0) {
             text = txt.getText();
-
         }
     }
 

@@ -1,6 +1,6 @@
 package com.company;
-import java.util.ArrayList;
 
+//Master class. Room and Treasure extends from this
 public class Thing {
 
         protected String name;
