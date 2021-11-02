@@ -10,8 +10,8 @@ public class Game {
     public ArrayList<Treasure> kitchenList = new ArrayList<Treasure>();
     public ArrayList<Treasure> hallwayList = new ArrayList<Treasure>();
     public ArrayList<Treasure> livingRoomList = new ArrayList<Treasure>();
-    boolean alreadyExecutedK = false; //So command open fridge under method openThings only executes ones
-    boolean alreadyExecutedL = false; //So command open closet under method openThings only executes ones
+    boolean executedKitchen = false; //command open fridge under method openThings only executes ones
+    boolean executedLivingR = false; //command open closet under method openThings only executes ones
     private final int noExit = -1;
     public Character hero;
     boolean running;
@@ -50,7 +50,7 @@ public class Game {
         return hero;
     }
 
-    //Splits upp command input into String[]
+    //Splits upp command input into String array
     public String[] splitCommand(String command){
         command = command.toLowerCase();
         String commandParts[] = command.split(" ");
@@ -110,13 +110,13 @@ public class Game {
     public void moveTo(Character hero, String[] command) {
         int exit;
         Room l = hero.getLocation();
-        String direction = command[1];
+
 
         if (command.length < 2 || command.length > 2 ) {
             System.out.println("You need to use a direction. Ex go north");
             return;
         }
-
+        String direction = command[1];
         switch (command[1]) {
             case "north":
                 exit = l.getNorth();
@@ -218,18 +218,18 @@ public class Game {
             run();
         }
 
-        if(!alreadyExecutedK && command[1].equals("fridge")) {
+        if(!executedKitchen && command[1].equals("fridge")) {
             System.out.println("The blood was ketchup but your wallet is in here!");
             kitchenList.add(new Treasure("Wallet","Your wallet and still everything in it. Lucky!"));
             map.get(1).setDescription("Bottles all over. It's confirmed ketchup on the floor.");
-            alreadyExecutedK = true;
+            executedKitchen = true;
             return;
         }
-        if(!alreadyExecutedL && command[1].equals("closet")) {
+        if(!executedLivingR && command[1].equals("closet")) {
             System.out.println("The ringing stopped but is that....Its your phone! Wohoo!");
             livingRoomList.add(new Treasure("Phone", "Its your phone! Needs charging though. But lets do that later"));
             map.get(3).setDescription("The music is still pumping but where are the people?");
-            alreadyExecutedL = true;
+            executedLivingR = true;
             return;
         }
         else{
@@ -299,7 +299,7 @@ public class Game {
 
     //Checks if specific use command, object and room are true for useObject
     public boolean canUse(String command, String object, String inRoom){
-        String s = hero.getLocation().getName();
+        String s = hero.getLocation().getName(); //current room location
         boolean testUse = false;
 
         for(Treasure list : playerList) {
