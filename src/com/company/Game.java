@@ -215,7 +215,7 @@ public class Game {
 
         if (command.length < 2) {
             System.out.println("You need to specify what to open. If you typ 'where' maybe you can get some clues.");
-            run();
+            return;
         }
 
         if(!executedKitchen && command[1].equals("fridge")) {
@@ -243,7 +243,7 @@ public class Game {
 
         if (command.length < 2) {
             System.out.println("You need to specify an item to take. Try 'look' command");
-            run();
+            return;
         }
 
         for(Treasure items : roomItems) {
@@ -269,7 +269,7 @@ public class Game {
     public void useObject(String[] command) {
         if (command.length < 2) {
             System.out.println("You need to use an item. Check your inventory");
-            run();
+            return;
         }
 
         boolean objectFound = false;
