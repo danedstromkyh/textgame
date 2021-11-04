@@ -1,4 +1,4 @@
-package com.company;
+package kyh.textgame;
 
 import java.util.ArrayList;
 

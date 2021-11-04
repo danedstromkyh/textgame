@@ -1,4 +1,4 @@
-package com.company;
+package kyh.textgame;
 
 //Master class. Room and Treasure extends from this
 public class Thing {

@@ -1,6 +1,4 @@
-package com.company;
-
-import java.util.ArrayList;
+package kyh.textgame;
 
 public class Treasure extends Thing{
 

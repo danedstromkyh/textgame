@@ -1,5 +1,7 @@
-import com.company.*;
-import com.company.Character;
+import kyh.textgame.*;
+import kyh.textgame.Character;
+import kyh.textgame.Game;
+import kyh.textgame.Room;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
